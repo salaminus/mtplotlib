@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
-#
+import sqlite3
+
+
 f = open('20046.dat', 'r')
 data = []
 for s in f.readlines():
