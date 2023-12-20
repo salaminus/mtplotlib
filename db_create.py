@@ -17,3 +17,31 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS stations(
     humidity REAL);"""
     )
 conn.commit()
+
+# Добавление записей в БД:
+"""
+INSERT INTO stations (
+                         idstations,
+                         stname,
+                         year,
+                         month,
+                         day,
+                         hour,
+                         dirwind,
+                         precipit,
+                         temperature,
+                         humidity
+                     )
+                     VALUES (
+                         2,
+                         '20046',
+                         '1966',
+                         '12',
+                         '31',
+                         '23',
+                         '3',
+                         '10.0',
+                         '-30.0',
+                         '70.0'
+                     );
+"""
