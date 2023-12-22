@@ -1,5 +1,5 @@
 import sqlite3
-
+# t.ly/zlMnK
 
 conn = sqlite3.connect('bd.db')
 cursor = conn.cursor()
