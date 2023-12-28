@@ -1,35 +1,52 @@
-import matplotlib.pyplot as plt
-import sqlite3
-import db_add
-import db_query
-# Вывести все записи из БД с минимальной температурой
-data = (1970, 1, 1)
-db_query.query(data)
+import sys
+from PyQt5 import uic
+from PyQt5.QtWidgets import *
 
-# f = open('20046.dat', 'r')
-# data = []
-# counter = 10
-# for s in f.readlines():
-#     temp = s.split()
-#                 # станция, год, месяц, день, час, напр ветра, осадки, темпер-ра, влажность
-#     data.append([temp[0], temp[5], temp[6], temp[7], temp[10], float(temp[39]), float(temp[47]), float(temp[-31]), float(temp[-15])])
-#     # print([temp[0], temp[5], temp[6], temp[7], temp[10], float(temp[39]), float(temp[47]), float(temp[-31]), float(temp[-15])])
-#     db_add.add_sign(counter, temp)
-#     counter += 1
-# print(data[:10])
+from fileDataRead import readDataFile
 
-# x_range = list(map(int, input().split()))
-#
-# x = range(len(data[x_range[0]:x_range[1]]))
-# y = [i[-2] for i in data[x_range[0]:x_range[1]]]
-#
-# plt.figure(figsize=(7, 7))
-# plt.subplot(3, 1, 1)
-# plt.title('Температура')
-# plt.xlabel('Время')
-# plt.ylabel('Температура')
-# plt.grid()
-# plt.plot(x, y, "g")
-# plt.show()
+class MonitoringApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi('MainWindow.ui', self)
+
+        # Навигация
+        self.navTab = {
+            'Загрузка данных': [self.btnDownloadTab.clicked.connect(self.navigate), 1],
+            'Визуализация данных': [self.btnVisualTab.clicked.connect(self.navigate), 2],
+            'Анализ данных': [self.btnAnalizeTab.clicked.connect(self.navigate), 3],
+            'Прогноз': [self.btnPredictTab.clicked.connect(self.navigate), 4],
+            'Мониторинг': [self.btnMonitoringTab.clicked.connect(self.navigate), 5],
+            'Экспорт': [self.btnExportTab.clicked.connect(self.navigate), None]
+        }
+
+        # Загрузка данных
+        self.downloadFileData.clicked.connect(self.loadTable)
+        self.clearBtnTableWidget.clicked.connect(self.clearTableWidget)
+
+    def navigate(self):
+        # print(self.sender().text())
+        print(self.sender().text(), self.navTab[self.sender().text()][1])
+        self.tabWidget.setCurrentIndex(self.navTab[self.sender().text()][1])
 
 
+    def clearTableWidget(self):
+        self.tableWidget.clear()
+
+    def loadTable(self):
+        data = readDataFile()
+        self.tableWidget.setColumnCount(len(data))
+        self.tableWidget.setHorizontalHeaderLabels(
+            ['станция', 'год', 'месяц', 'день', 'час', 'направление ветра', 'осадки', 'температура', 'влажность']
+        )
+        self.tableWidget.setRowCount(0)
+        for i in range(len(data)):
+            self.tableWidget.setRowCount(self.tableWidget.rowCount() + 1)
+            for j in range(len(data[i])):
+                print(i, j, data[i][j])
+                self.tableWidget.setItem(i, j, QTableWidgetItem(str(data[i][j])))
+        self.tableWidget.resizeColumnsToContents()
+
+app = QApplication(sys.argv)
+ex = MonitoringApp()
+ex.show()
+sys.exit(app.exec())
